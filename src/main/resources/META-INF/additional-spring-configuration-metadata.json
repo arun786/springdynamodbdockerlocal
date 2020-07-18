@@ -1,0 +1,19 @@
+{
+  "properties": [
+    {
+      "name": "spring.dynamo.region",
+      "type": "java.lang.String",
+      "description": "Description for spring.dynamo.region."
+    },
+    {
+      "name": "spring.dynamo.endpoint",
+      "type": "java.lang.String",
+      "description": "Description for spring.dynamo.endpoint."
+    },
+    {
+      "name": "spring.dynamo.tableName",
+      "type": "java.lang.String",
+      "description": "Description for spring.dynamo.tableName."
+    }
+  ]
+}
