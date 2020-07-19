@@ -29,9 +29,10 @@ public class TokenLoader implements CommandLineRunner {
         int uuid = Integer.parseInt(tokenConfig.getUuid());
         int tokens = Integer.parseInt(tokenConfig.getTokens());
         for (int i = 0; i < uuid; i++) {
+            String actorId = UUID.randomUUID().toString();
             for (int j = 0; j < tokens; j++) {
                 int number = (int) Math.floor(Math.random() * 100000);
-                Token token = Token.builder().token(String.valueOf(number)).uuid(UUID.randomUUID().toString()).build();
+                Token token = Token.builder().token(String.valueOf(number)).uuid(actorId).build();
                 tokenRepository.save(token);
             }
         }
