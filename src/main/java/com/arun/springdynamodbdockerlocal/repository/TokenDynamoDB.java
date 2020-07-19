@@ -12,5 +12,5 @@ import java.util.Map;
 public interface TokenDynamoDB {
     List<Map<String, AttributeValue>> getTokenItems(String actorId);
 
-    boolean updateTokenItems(String actorId, List<TokenRequest> tokens, List<Integer> counts);
+    boolean updateTokenItems(String actorId, List<TokenRequest> tokens, int totalCountFor24Hrs, int totalCountFor30Days, int ttlFor24Hrs, int ttlFor30Days);
 }

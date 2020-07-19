@@ -22,4 +22,7 @@ public class TokenLimitConfig {
     private String for30Day;
     private String count;
     private String actorId;
+    private String ttlFor24Hr;
+    private String ttlFor30Days;
+    private String ttl;
 }

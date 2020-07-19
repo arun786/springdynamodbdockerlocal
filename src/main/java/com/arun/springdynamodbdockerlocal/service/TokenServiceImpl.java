@@ -9,6 +9,7 @@ import com.arun.springdynamodbdockerlocal.repository.TokenRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,21 +30,45 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public List<Token> getToken(String actorId, List<TokenRequest> tokens) {
+    public List<Token> getToken(String actorId, List<TokenRequest> tokenRequests) {
 
         List<Map<String, AttributeValue>> tokenItems = tokenDynamoDB.getTokenItems(actorId);
+        int requestSize = tokenRequests.size();
 
-        int countFor24Hr = 0;
-        int countFor30days = 0;
+        Map<String, List<String>> actorDetails = getActorDetails(tokenItems, requestSize);
+        int totalCountFor24Hrs = 0;
+        int totalCountFor30Days = 0;
+        int ttlFor24Hrs = 0;
+        int ttlFor30Days = 0;
+        if (!actorDetails.isEmpty()) {
+            List<String> lst24Hrs = actorDetails.get("24Hr");
+            List<String> lst30Days = actorDetails.get("30Days");
 
-        List<Integer> counts = new ArrayList<>(2);
-        counts.add(countFor24Hr);
-        counts.add(countFor30days);
 
-        if (tokenItems.isEmpty() || validateActorEligible(tokenItems, counts)) {
+            if (lst24Hrs != null) {
+                totalCountFor24Hrs = Integer.parseInt(lst24Hrs.get(0));
+                ttlFor24Hrs = Integer.parseInt(lst24Hrs.get(1));
+            } else {
+                totalCountFor24Hrs = requestSize;
+            }
+            if (lst30Days != null) {
+                totalCountFor30Days = Integer.parseInt(lst30Days.get(0));
+                ttlFor30Days = Integer.parseInt(lst30Days.get(1));
+            }else {
+                totalCountFor30Days = requestSize;
+            }
+        }
+
+
+        if (tokenItems.isEmpty()) {
             List<Token> tokensByUuid = tokenRepository.getTokensByUuid(actorId);
-            //TODO logic for tokens
-            tokenDynamoDB.updateTokenItems(actorId, tokens, counts);
+            //TODO logic for tokenRequests
+            tokenDynamoDB.updateTokenItems(actorId, tokenRequests, requestSize, requestSize, ttlFor24Hrs, ttlFor30Days);
+            return tokensByUuid;
+        } else if (validateActorEligible(totalCountFor24Hrs, totalCountFor30Days)) {
+            List<Token> tokensByUuid = tokenRepository.getTokensByUuid(actorId);
+            //TODO logic for tokenRequests
+            tokenDynamoDB.updateTokenItems(actorId, tokenRequests, totalCountFor24Hrs, totalCountFor30Days, ttlFor24Hrs, ttlFor30Days);
             return tokensByUuid;
         } else {
             //TODO throw an exception saying limit reached.
@@ -51,25 +76,39 @@ public class TokenServiceImpl implements TokenService {
         }
     }
 
-    private boolean validateActorEligible(List<Map<String, AttributeValue>> tokenItems, List<Integer> counts) {
+    private boolean validateActorEligible(int totalCountFor24Hrs, int totalCountFor30Days) {
         int tokenLimitFor24hr = Integer.parseInt(tokenLimitConfig.getTokenLimitFor24hr());
         int tokenLimitFor30day = Integer.parseInt(tokenLimitConfig.getTokenLimitFor30day());
+
+        if (totalCountFor30Days > tokenLimitFor30day) {
+            return false;
+        } else return totalCountFor24Hrs < tokenLimitFor24hr;
+    }
+
+    private Map<String, List<String>> getActorDetails(List<Map<String, AttributeValue>> tokenItems, int requestTokenCount) {
+
+        Map<String, List<String>> actorDetails = new HashMap<>();
 
         for (Map<String, AttributeValue> tokens : tokenItems) {
             String duration = tokens.get(tokenLimitConfig.getDuration()).getS();
             int count = Integer.parseInt(tokens.get(tokenLimitConfig.getCount()).getN());
+            String ttl = tokens.get(tokenLimitConfig.getTtl()).getN();
 
             if (duration.equals(tokenLimitConfig.getFor24Hr())) {
-                int existingCountFor24Hr = counts.get(0) + count;
-                counts.set(0, existingCountFor24Hr);
+                List<String> for24Hr = new ArrayList<>();
+                int totalCount = count + requestTokenCount;
+                for24Hr.add(String.valueOf(totalCount));
+                for24Hr.add(ttl);
+                actorDetails.put("24Hr", for24Hr);
             } else if (duration.equals(tokenLimitConfig.getFor30Day())) {
-                int existingCountFor30Days = counts.get(1) + count;
-                counts.set(1, existingCountFor30Days);
+                List<String> for30Days = new ArrayList<>();
+                int totalCount = count + requestTokenCount;
+                for30Days.add(String.valueOf(totalCount));
+                for30Days.add(ttl);
+                actorDetails.put("30Days", for30Days);
             }
         }
 
-        if (counts.get(1) > tokenLimitFor30day) {
-            return false;
-        } else return counts.get(0) < tokenLimitFor24hr;
+        return actorDetails;
     }
 }
