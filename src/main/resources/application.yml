@@ -25,5 +25,9 @@ spring:
     uuid: 10
     tokens: 100
 
+  limit:
+    tokenLimitFor24hr: 10
+    tokenLimitFor30day: 20
+
 server:
   port: 8080

@@ -1,11 +1,13 @@
 package com.arun.springdynamodbdockerlocal.controller;
 
-import com.arun.springdynamodbdockerlocal.repository.TokenValidationRepository;
-import org.springframework.http.HttpStatus;
+import com.arun.springdynamodbdockerlocal.model.Token;
+import com.arun.springdynamodbdockerlocal.model.request.Tokens;
+import com.arun.springdynamodbdockerlocal.service.TokenService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @author arun on 7/18/20
@@ -13,16 +15,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class TokenController {
 
-    private TokenValidationRepository tokenValidationRepository;
+    private TokenService tokenService;
 
-    public TokenController(TokenValidationRepository tokenValidationRepository) {
-        this.tokenValidationRepository = tokenValidationRepository;
+    @Autowired
+    public TokenController(TokenService tokenService) {
+        this.tokenService = tokenService;
     }
 
-    @GetMapping("/v1/token/{actorId}")
-    public ResponseEntity<HttpStatus> getToken(@PathVariable String actorId) {
-        tokenValidationRepository.getToken(actorId);
-        return ResponseEntity.ok(HttpStatus.ACCEPTED);
+    @PostMapping("/v1/token/{actorId}")
+    public ResponseEntity<List<Token>> getToken(@PathVariable String actorId, @RequestBody List<Tokens> tokens) {
+        List<Token> token = tokenService.getToken(actorId, tokens);
+        return ResponseEntity.ok(token);
     }
-
 }
