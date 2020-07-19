@@ -42,20 +42,39 @@ public class TokenDynamoDBImpl implements TokenDynamoDB {
     }
 
     @Override
-    public boolean updateTokenItems(String actorId, List<TokenRequest> tokens, List<Integer> counts) {
+    public boolean updateTokenItems(String actorId, List<TokenRequest> tokens, int totalCountFor24Hrs, int totalCountFor30Days, int ttlFor24Hrs, int ttlFor30Days) {
         Map<String, AttributeValue> item24Hr = new HashMap<>();
         Map<String, AttributeValue> item30Day = new HashMap<>();
         int size = tokens.size();
-        int totalCountFor24Hr = size + counts.get(0);
-        int totalCountFor30Days = size + counts.get(1);
+
+        int existingCountFor24Hr = totalCountFor24Hrs - size;
+        int existingCountFor30Days = totalCountFor30Days - size;
 
         item24Hr.put(tokenLimitConfig.getActorId(), new AttributeValue().withS(actorId));
         item24Hr.put(tokenLimitConfig.getDuration(), new AttributeValue().withS(tokenLimitConfig.getFor24Hr()));
-        item24Hr.put(tokenLimitConfig.getCount(), new AttributeValue().withN(String.valueOf(totalCountFor24Hr)));
+        item24Hr.put(tokenLimitConfig.getCount(), new AttributeValue().withN(String.valueOf(totalCountFor24Hrs)));
+
 
         item30Day.put(tokenLimitConfig.getActorId(), new AttributeValue().withS(actorId));
         item30Day.put(tokenLimitConfig.getDuration(), new AttributeValue().withS(tokenLimitConfig.getFor30Day()));
         item30Day.put(tokenLimitConfig.getCount(), new AttributeValue().withN(String.valueOf(totalCountFor30Days)));
+        long a = System.currentTimeMillis() / 1000L;
+
+
+        if (existingCountFor24Hr == 0) {
+            //this expires after 60 seconds
+            int exp24Hr = Math.toIntExact(a + 60);
+            item24Hr.put("ttl", new AttributeValue().withN(String.valueOf(exp24Hr)));
+        } else {
+            item24Hr.put("ttl", new AttributeValue().withN(String.valueOf(ttlFor24Hrs)));
+        }
+        if (existingCountFor30Days == 0) {
+            //this expires after 1 hour
+            int exp30Day = (int) (a + 3600);
+            item30Day.put("ttl", new AttributeValue().withN(String.valueOf(exp30Day)));
+        } else {
+            item30Day.put("ttl", new AttributeValue().withN(String.valueOf(ttlFor30Days)));
+        }
 
         PutItemRequest putItemFor24Hr = new PutItemRequest(awsConfig.getTableName(), item24Hr);
         PutItemRequest putItemFor30Days = new PutItemRequest(awsConfig.getTableName(), item30Day);

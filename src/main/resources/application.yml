@@ -33,6 +33,9 @@ spring:
     For30Day: "for30Day"
     actorId: "actorId"
     count: "count"
+    ttlFor24Hr: "60"
+    ttlFor30days: "3600"
+    ttl: "ttl"
 
 server:
   port: 8080

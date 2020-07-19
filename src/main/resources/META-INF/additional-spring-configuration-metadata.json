@@ -49,6 +49,21 @@
       "name": "spring.limit.actorId",
       "type": "java.lang.String",
       "description": "Description for spring.limit.actorId."
+    },
+    {
+      "name": "spring.limit.ttlFor24Hr",
+      "type": "java.lang.String",
+      "description": "Description for spring.limit.ttlFor24Hr."
+    },
+    {
+      "name": "spring.limit.ttlFor30days",
+      "type": "java.lang.String",
+      "description": "Description for spring.limit.ttlFor30days."
+    },
+    {
+      "name": "spring.limit.ttl",
+      "type": "java.lang.String",
+      "description": "Description for spring.limit.ttl."
     }
   ]
 }
