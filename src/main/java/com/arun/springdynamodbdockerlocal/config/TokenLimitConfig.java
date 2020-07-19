@@ -17,4 +17,9 @@ import org.springframework.context.annotation.Configuration;
 public class TokenLimitConfig {
     private String tokenLimitFor24hr;
     private String tokenLimitFor30day;
+    private String duration;
+    private String for24Hr;
+    private String for30Day;
+    private String count;
+    private String actorId;
 }

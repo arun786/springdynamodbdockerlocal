@@ -3,7 +3,7 @@ package com.arun.springdynamodbdockerlocal.service;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.arun.springdynamodbdockerlocal.config.TokenLimitConfig;
 import com.arun.springdynamodbdockerlocal.model.Token;
-import com.arun.springdynamodbdockerlocal.model.request.Tokens;
+import com.arun.springdynamodbdockerlocal.model.request.TokenRequest;
 import com.arun.springdynamodbdockerlocal.repository.TokenDynamoDB;
 import com.arun.springdynamodbdockerlocal.repository.TokenRepository;
 import org.springframework.stereotype.Service;
@@ -29,7 +29,7 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public List<Token> getToken(String actorId, List<Tokens> tokens) {
+    public List<Token> getToken(String actorId, List<TokenRequest> tokens) {
 
         List<Map<String, AttributeValue>> tokenItems = tokenDynamoDB.getTokenItems(actorId);
 
@@ -47,7 +47,7 @@ public class TokenServiceImpl implements TokenService {
             return tokensByUuid;
         } else {
             //TODO throw an exception saying limit reached.
-            return null;
+            throw new RuntimeException("Limit Exceeded");
         }
     }
 
@@ -55,17 +55,16 @@ public class TokenServiceImpl implements TokenService {
         int tokenLimitFor24hr = Integer.parseInt(tokenLimitConfig.getTokenLimitFor24hr());
         int tokenLimitFor30day = Integer.parseInt(tokenLimitConfig.getTokenLimitFor30day());
 
-        int size = tokenItems.size();
         for (Map<String, AttributeValue> tokens : tokenItems) {
-            String duration = tokens.get("duration").getS();
-            int count = Integer.parseInt(tokens.get("count").getN());
+            String duration = tokens.get(tokenLimitConfig.getDuration()).getS();
+            int count = Integer.parseInt(tokens.get(tokenLimitConfig.getCount()).getN());
 
-            if (duration.equals("24 hrs")) {
+            if (duration.equals(tokenLimitConfig.getFor24Hr())) {
                 int existingCountFor24Hr = counts.get(0) + count;
-                counts.add(0, existingCountFor24Hr + size);
-            } else if (duration.equals("30 days")) {
+                counts.set(0, existingCountFor24Hr);
+            } else if (duration.equals(tokenLimitConfig.getFor30Day())) {
                 int existingCountFor30Days = counts.get(1) + count;
-                counts.add(1, existingCountFor30Days + size);
+                counts.set(1, existingCountFor30Days);
             }
         }
 

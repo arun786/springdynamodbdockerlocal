@@ -10,6 +10,6 @@ import lombok.*;
 @NoArgsConstructor
 @Getter
 @Setter
-public class Tokens {
+public class TokenRequest {
     private String token;
 }
