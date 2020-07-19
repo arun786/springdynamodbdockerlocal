@@ -28,6 +28,11 @@ spring:
   limit:
     tokenLimitFor24hr: 10
     tokenLimitFor30day: 20
+    duration: "duration"
+    For24Hr: "for24Hr"
+    For30Day: "for30Day"
+    actorId: "actorId"
+    count: "count"
 
 server:
   port: 8080

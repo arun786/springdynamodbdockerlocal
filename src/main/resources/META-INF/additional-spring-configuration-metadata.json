@@ -24,6 +24,31 @@
       "name": "spring.limit.tokenLimitFor30day",
       "type": "java.lang.String",
       "description": "Description for spring.limit.tokenLimitFor30day."
+    },
+    {
+      "name": "spring.limit.duration",
+      "type": "java.lang.String",
+      "description": "Description for spring.limit.duration."
+    },
+    {
+      "name": "spring.limit.For24Hr",
+      "type": "java.lang.String",
+      "description": "Description for spring.limit.For24Hr."
+    },
+    {
+      "name": "spring.limit.For30Day",
+      "type": "java.lang.String",
+      "description": "Description for spring.limit.For30Day."
+    },
+    {
+      "name": "spring.limit.count",
+      "type": "java.lang.String",
+      "description": "Description for spring.limit.count."
+    },
+    {
+      "name": "spring.limit.actorId",
+      "type": "java.lang.String",
+      "description": "Description for spring.limit.actorId."
     }
   ]
 }

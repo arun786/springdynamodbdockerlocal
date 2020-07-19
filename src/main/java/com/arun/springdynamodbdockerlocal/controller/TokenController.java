@@ -1,7 +1,7 @@
 package com.arun.springdynamodbdockerlocal.controller;
 
 import com.arun.springdynamodbdockerlocal.model.Token;
-import com.arun.springdynamodbdockerlocal.model.request.Tokens;
+import com.arun.springdynamodbdockerlocal.model.request.TokenRequest;
 import com.arun.springdynamodbdockerlocal.service.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +23,7 @@ public class TokenController {
     }
 
     @PostMapping("/v1/token/{actorId}")
-    public ResponseEntity<List<Token>> getToken(@PathVariable String actorId, @RequestBody List<Tokens> tokens) {
+    public ResponseEntity<List<Token>> getToken(@PathVariable String actorId, @RequestBody List<TokenRequest> tokens) {
         List<Token> token = tokenService.getToken(actorId, tokens);
         return ResponseEntity.ok(token);
     }
