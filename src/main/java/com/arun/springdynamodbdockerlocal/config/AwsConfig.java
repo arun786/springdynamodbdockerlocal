@@ -18,4 +18,5 @@ public class AwsConfig {
     private String tableName;
     private String region;
     private String endPoint;
+    private String maxRetry;
 }
