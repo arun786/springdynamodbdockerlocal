@@ -21,6 +21,7 @@ spring:
     tableName: "TokenCounter"
     region: "us-west-1"
     endPoint: "http://localhost:8042"
+    maxRetry: 3
   token:
     uuid: 10
     tokens: 100

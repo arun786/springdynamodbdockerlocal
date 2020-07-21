@@ -64,6 +64,11 @@
       "name": "spring.limit.ttl",
       "type": "java.lang.String",
       "description": "Description for spring.limit.ttl."
+    },
+    {
+      "name": "spring.dynamo.maxRetry",
+      "type": "java.lang.String",
+      "description": "Description for spring.dynamo.maxRetry."
     }
   ]
 }

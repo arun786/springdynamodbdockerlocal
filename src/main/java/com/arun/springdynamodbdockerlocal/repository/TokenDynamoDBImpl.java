@@ -6,9 +6,11 @@ import com.arun.springdynamodbdockerlocal.config.AwsConfig;
 import com.arun.springdynamodbdockerlocal.config.TokenLimitConfig;
 import com.arun.springdynamodbdockerlocal.model.request.TokenRequest;
 import com.google.common.collect.ImmutableMap;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +19,7 @@ import java.util.Map;
  * @author arun on 7/18/20
  */
 @Repository
+@Slf4j
 public class TokenDynamoDBImpl implements TokenDynamoDB {
 
     private final AwsConfig awsConfig;
@@ -37,8 +40,14 @@ public class TokenDynamoDBImpl implements TokenDynamoDB {
                 .withKeyConditions(ImmutableMap.of(tokenLimitConfig.getActorId(), new Condition()
                         .withComparisonOperator(ComparisonOperator.EQ)
                         .withAttributeValueList(new AttributeValue(actorId))));
-        QueryResult query = amazonDynamoDB.query(queryRequest);
-        return query.getItems();
+        List<Map<String, AttributeValue>> items = new ArrayList<>();
+        try {
+            QueryResult query = amazonDynamoDB.query(queryRequest);
+            items = query.getItems();
+        } catch (AmazonDynamoDBException e) {
+            log.error("Error to get the details of actorId {} with error {}", actorId, e.getLocalizedMessage());
+        }
+        return items;
     }
 
     @Override
@@ -78,8 +87,15 @@ public class TokenDynamoDBImpl implements TokenDynamoDB {
 
         PutItemRequest putItemFor24Hr = new PutItemRequest(awsConfig.getTableName(), item24Hr);
         PutItemRequest putItemFor30Days = new PutItemRequest(awsConfig.getTableName(), item30Day);
-        amazonDynamoDB.putItem(putItemFor24Hr);
-        amazonDynamoDB.putItem(putItemFor30Days);
-        return true;
+        boolean isDynamoUpdated = true;
+        try {
+            amazonDynamoDB.putItem(putItemFor24Hr);
+            amazonDynamoDB.putItem(putItemFor30Days);
+        } catch (AmazonDynamoDBException e) {
+            log.error("Error to get the details of actorId {} with error {}", actorId, e.getLocalizedMessage());
+            isDynamoUpdated = false;
+        }
+
+        return isDynamoUpdated;
     }
 }

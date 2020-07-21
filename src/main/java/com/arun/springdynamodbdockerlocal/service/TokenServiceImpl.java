@@ -6,6 +6,7 @@ import com.arun.springdynamodbdockerlocal.model.Token;
 import com.arun.springdynamodbdockerlocal.model.request.TokenRequest;
 import com.arun.springdynamodbdockerlocal.repository.TokenDynamoDB;
 import com.arun.springdynamodbdockerlocal.repository.TokenRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import java.util.Map;
  * @author arun on 7/18/20
  */
 @Service
+@Slf4j
 public class TokenServiceImpl implements TokenService {
 
     private final TokenRepository tokenRepository;
@@ -54,7 +56,7 @@ public class TokenServiceImpl implements TokenService {
             if (lst30Days != null) {
                 totalCountFor30Days = Integer.parseInt(lst30Days.get(0));
                 ttlFor30Days = Integer.parseInt(lst30Days.get(1));
-            }else {
+            } else {
                 totalCountFor30Days = requestSize;
             }
         }
@@ -67,22 +69,28 @@ public class TokenServiceImpl implements TokenService {
             return tokensByUuid;
         } else if (validateActorEligible(totalCountFor24Hrs, totalCountFor30Days)) {
             List<Token> tokensByUuid = tokenRepository.getTokensByUuid(actorId);
-            //TODO logic for tokenRequests
-            tokenDynamoDB.updateTokenItems(actorId, tokenRequests, totalCountFor24Hrs, totalCountFor30Days, ttlFor24Hrs, ttlFor30Days);
+            //todo logic for filtering token
+            tokenDynamoDB.updateTokenItems(actorId, tokenRequests, requestSize, requestSize, ttlFor24Hrs, ttlFor30Days);
             return tokensByUuid;
         } else {
-            //TODO throw an exception saying limit reached.
             throw new RuntimeException("Limit Exceeded");
         }
     }
 
+    /**
+     * @param totalCountFor24Hrs  - the number of requests which is allowed in 24 hrs. (though the period can be changed from yml file)
+     * @param totalCountFor30Days - the number of requests which is allowed for 30 days. (though the period can be changed from yml file)
+     * @return - true if the actor is eligible else false
+     */
     private boolean validateActorEligible(int totalCountFor24Hrs, int totalCountFor30Days) {
         int tokenLimitFor24hr = Integer.parseInt(tokenLimitConfig.getTokenLimitFor24hr());
         int tokenLimitFor30day = Integer.parseInt(tokenLimitConfig.getTokenLimitFor30day());
 
         if (totalCountFor30Days > tokenLimitFor30day) {
             return false;
-        } else return totalCountFor24Hrs < tokenLimitFor24hr;
+        }
+
+        return totalCountFor24Hrs < tokenLimitFor24hr;
     }
 
     private Map<String, List<String>> getActorDetails(List<Map<String, AttributeValue>> tokenItems, int requestTokenCount) {
