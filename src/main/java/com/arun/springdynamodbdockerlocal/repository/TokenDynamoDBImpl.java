@@ -3,7 +3,7 @@ package com.arun.springdynamodbdockerlocal.repository;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.model.*;
 import com.arun.springdynamodbdockerlocal.config.AwsConfig;
-import com.arun.springdynamodbdockerlocal.config.TokenLimitConfig;
+import com.arun.springdynamodbdockerlocal.constants.Constants;
 import com.arun.springdynamodbdockerlocal.model.request.TokenRequest;
 import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
@@ -24,20 +24,18 @@ public class TokenDynamoDBImpl implements TokenDynamoDB {
 
     private final AwsConfig awsConfig;
     private final AmazonDynamoDB amazonDynamoDB;
-    private final TokenLimitConfig tokenLimitConfig;
 
     @Autowired
-    public TokenDynamoDBImpl(AwsConfig awsConfig, AmazonDynamoDB amazonDynamoDB, TokenLimitConfig tokenLimitConfig) {
+    public TokenDynamoDBImpl(AwsConfig awsConfig, AmazonDynamoDB amazonDynamoDB) {
         this.awsConfig = awsConfig;
         this.amazonDynamoDB = amazonDynamoDB;
-        this.tokenLimitConfig = tokenLimitConfig;
     }
 
     @Override
     public List<Map<String, AttributeValue>> getTokenItems(String actorId) {
         QueryRequest queryRequest = new QueryRequest();
         queryRequest.withTableName(awsConfig.getTableName())
-                .withKeyConditions(ImmutableMap.of(tokenLimitConfig.getActorId(), new Condition()
+                .withKeyConditions(ImmutableMap.of(Constants.actorId, new Condition()
                         .withComparisonOperator(ComparisonOperator.EQ)
                         .withAttributeValueList(new AttributeValue(actorId))));
         List<Map<String, AttributeValue>> items = new ArrayList<>();
@@ -59,14 +57,14 @@ public class TokenDynamoDBImpl implements TokenDynamoDB {
         int existingCountFor24Hr = totalCountFor24Hrs - size;
         int existingCountFor30Days = totalCountFor30Days - size;
 
-        item24Hr.put(tokenLimitConfig.getActorId(), new AttributeValue().withS(actorId));
-        item24Hr.put(tokenLimitConfig.getDuration(), new AttributeValue().withS(tokenLimitConfig.getFor24Hr()));
-        item24Hr.put(tokenLimitConfig.getCount(), new AttributeValue().withN(String.valueOf(totalCountFor24Hrs)));
+        item24Hr.put(Constants.actorId, new AttributeValue().withS(actorId));
+        item24Hr.put(Constants.duration, new AttributeValue().withS(Constants.for24Hr));
+        item24Hr.put(Constants.count, new AttributeValue().withN(String.valueOf(totalCountFor24Hrs)));
 
 
-        item30Day.put(tokenLimitConfig.getActorId(), new AttributeValue().withS(actorId));
-        item30Day.put(tokenLimitConfig.getDuration(), new AttributeValue().withS(tokenLimitConfig.getFor30Day()));
-        item30Day.put(tokenLimitConfig.getCount(), new AttributeValue().withN(String.valueOf(totalCountFor30Days)));
+        item30Day.put(Constants.actorId, new AttributeValue().withS(actorId));
+        item30Day.put(Constants.duration, new AttributeValue().withS(Constants.for30Day));
+        item30Day.put(Constants.count, new AttributeValue().withN(String.valueOf(totalCountFor30Days)));
         long a = System.currentTimeMillis() / 1000L;
 
 

@@ -7,16 +7,14 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Configuration;
 
 /**
- * @author arun on 7/18/20
+ * @author arun on 7/25/20
  */
 @Configuration
+@ConfigurationProperties(prefix = "client.url")
 @EnableConfigurationProperties
-@ConfigurationProperties(prefix = "dynamo.validation.limit")
 @Getter
 @Setter
-public class TokenLimitConfig {
-    private String tokenLimitFor24hr;
-    private String tokenLimitFor30day;
-    private String ttlFor24Hr;
-    private String ttlFor30Days;
+public class UrlConfig {
+    private String mockUrl;
+    private String mockActuatorUrl;
 }

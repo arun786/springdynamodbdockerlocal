@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @EnableConfigurationProperties
-@ConfigurationProperties(prefix = "spring.dynamo")
+@ConfigurationProperties(prefix = "dynamo.details")
 @Getter
 @Setter
 public class AwsConfig {

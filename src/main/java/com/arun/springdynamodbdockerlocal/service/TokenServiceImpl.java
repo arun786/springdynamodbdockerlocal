@@ -2,11 +2,14 @@ package com.arun.springdynamodbdockerlocal.service;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.arun.springdynamodbdockerlocal.config.TokenLimitConfig;
+import com.arun.springdynamodbdockerlocal.constants.Constants;
+import com.arun.springdynamodbdockerlocal.exception.TokenException;
 import com.arun.springdynamodbdockerlocal.model.Token;
 import com.arun.springdynamodbdockerlocal.model.request.TokenRequest;
 import com.arun.springdynamodbdockerlocal.repository.TokenDynamoDB;
 import com.arun.springdynamodbdockerlocal.repository.TokenRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -32,7 +35,7 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public List<Token> getToken(String actorId, List<TokenRequest> tokenRequests) {
+    public List<Token> getToken(String actorId, List<TokenRequest> tokenRequests) throws TokenException {
 
         List<Map<String, AttributeValue>> tokenItems = tokenDynamoDB.getTokenItems(actorId);
         int requestSize = tokenRequests.size();
@@ -65,15 +68,15 @@ public class TokenServiceImpl implements TokenService {
         if (tokenItems.isEmpty()) {
             List<Token> tokensByUuid = tokenRepository.getTokensByUuid(actorId);
             //TODO logic for tokenRequests
-            tokenDynamoDB.updateTokenItems(actorId, tokenRequests, requestSize, requestSize, ttlFor24Hrs, ttlFor30Days);
+            tokenDynamoDB.updateTokenItems(actorId, tokenRequests, totalCountFor24Hrs, totalCountFor30Days, ttlFor24Hrs, ttlFor30Days);
             return tokensByUuid;
         } else if (validateActorEligible(totalCountFor24Hrs, totalCountFor30Days)) {
             List<Token> tokensByUuid = tokenRepository.getTokensByUuid(actorId);
             //todo logic for filtering token
-            tokenDynamoDB.updateTokenItems(actorId, tokenRequests, requestSize, requestSize, ttlFor24Hrs, ttlFor30Days);
+            tokenDynamoDB.updateTokenItems(actorId, tokenRequests, totalCountFor24Hrs, totalCountFor30Days, ttlFor24Hrs, ttlFor30Days);
             return tokensByUuid;
         } else {
-            throw new RuntimeException("Limit Exceeded");
+            throw new TokenException(HttpStatus.PRECONDITION_FAILED, "Limit Exceeded");
         }
     }
 
@@ -98,17 +101,17 @@ public class TokenServiceImpl implements TokenService {
         Map<String, List<String>> actorDetails = new HashMap<>();
 
         for (Map<String, AttributeValue> tokens : tokenItems) {
-            String duration = tokens.get(tokenLimitConfig.getDuration()).getS();
-            int count = Integer.parseInt(tokens.get(tokenLimitConfig.getCount()).getN());
-            String ttl = tokens.get(tokenLimitConfig.getTtl()).getN();
+            String duration = tokens.get(Constants.duration).getS();
+            int count = Integer.parseInt(tokens.get(Constants.count).getN());
+            String ttl = tokens.get(Constants.ttl).getN();
 
-            if (duration.equals(tokenLimitConfig.getFor24Hr())) {
+            if (duration.equals(Constants.for24Hr)) {
                 List<String> for24Hr = new ArrayList<>();
                 int totalCount = count + requestTokenCount;
                 for24Hr.add(String.valueOf(totalCount));
                 for24Hr.add(ttl);
                 actorDetails.put("24Hr", for24Hr);
-            } else if (duration.equals(tokenLimitConfig.getFor30Day())) {
+            } else if (duration.equals(Constants.for30Day)) {
                 List<String> for30Days = new ArrayList<>();
                 int totalCount = count + requestTokenCount;
                 for30Days.add(String.valueOf(totalCount));
