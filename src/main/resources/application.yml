@@ -59,4 +59,4 @@ server:
 client:
   url:
     mockUrl: "http://localhost:8090"
-    mockActuatorUrl: "http://localhost:8080/actuator/health"
+    mockActuatorUrl: "http://localhost:8443/actuator/health"
