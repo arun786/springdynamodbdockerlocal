@@ -26,7 +26,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.7.0'
     compile group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.7.0'
-//    implementation("software.amazon.awssdk:dynamodb:2.10.42")
+    compile 'org.springframework.boot:spring-boot-starter-actuator'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    compile 'org.projectreactor:reactor-spring:1.0.1.RELEASE'
+
     compile group: 'com.amazonaws', name: 'aws-java-sdk-dynamodb', version: '1.11.822'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'

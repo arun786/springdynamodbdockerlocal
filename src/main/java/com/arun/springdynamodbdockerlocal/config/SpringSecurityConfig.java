@@ -6,17 +6,18 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.List;
+
 /**
- * @author arun on 7/18/20
+ * @author arun on 7/25/20
  */
 @Configuration
 @EnableConfigurationProperties
-@ConfigurationProperties(prefix = "dynamo.validation.limit")
+@ConfigurationProperties(prefix = "spring.security.user")
 @Getter
 @Setter
-public class TokenLimitConfig {
-    private String tokenLimitFor24hr;
-    private String tokenLimitFor30day;
-    private String ttlFor24Hr;
-    private String ttlFor30Days;
+public class SpringSecurityConfig {
+    private String name;
+    private String password;
+    private List<String> roles;
 }

@@ -2,9 +2,27 @@ spring:
   profiles:
     active: local
 
+management:
+  endpoint:
+    metrics:
+      enabled: true
+    loggers:
+      enabled: false
+
+  endpoints:
+    web:
+      exposure:
+        include: beans,metrics,info,health,loggers
+
 ---
 spring:
   profiles: local
+
+  security:
+    user:
+      name: user
+      password: password
+      roles: USER,ADMIN
 
   h2:
     console:
@@ -17,26 +35,28 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
 
-  dynamo:
+token:
+  limit:
+    uuid: 10
+    tokens: 100
+
+dynamo:
+  details:
     tableName: "TokenCounter"
     region: "us-west-1"
     endPoint: "http://localhost:8042"
     maxRetry: 3
-  token:
-    uuid: 10
-    tokens: 100
-
-  limit:
-    tokenLimitFor24hr: 10
-    tokenLimitFor30day: 20
-    duration: "duration"
-    For24Hr: "for24Hr"
-    For30Day: "for30Day"
-    actorId: "actorId"
-    count: "count"
-    ttlFor24Hr: "60"
-    ttlFor30days: "3600"
-    ttl: "ttl"
+  validation:
+    limit:
+      tokenLimitFor24hr: 10
+      tokenLimitFor30day: 20
+      ttlFor24Hr: "60"
+      ttlFor30days: "3600"
 
 server:
   port: 8080
+
+client:
+  url:
+    mockUrl: "http://localhost:8090"
+    mockActuatorUrl: "http://localhost:8080/actuator/health"

@@ -1,74 +1,54 @@
 {
   "properties": [
     {
-      "name": "spring.dynamo.region",
+      "name": "dynamo.validation.limit.tokenLimitFor24hr",
       "type": "java.lang.String",
-      "description": "Description for spring.dynamo.region."
+      "description": "Description for dynamo.validation.limit.tokenLimitFor24hr."
     },
     {
-      "name": "spring.dynamo.endpoint",
+      "name": "dynamo.validation.limit.tokenLimitFor30day",
       "type": "java.lang.String",
-      "description": "Description for spring.dynamo.endpoint."
+      "description": "Description for dynamo.validation.limit.tokenLimitFor30day."
     },
     {
-      "name": "spring.dynamo.tableName",
+      "name": "dynamo.validation.limit.ttlFor24Hr",
       "type": "java.lang.String",
-      "description": "Description for spring.dynamo.tableName."
+      "description": "Description for dynamo.validation.limit.ttlFor24Hr."
     },
     {
-      "name": "spring.limit.tokenLimitFor24hr",
+      "name": "dynamo.validation.limit.ttlFor30days",
       "type": "java.lang.String",
-      "description": "Description for spring.limit.tokenLimitFor24hr."
+      "description": "Description for dynamo.validation.limit.ttlFor30days."
     },
     {
-      "name": "spring.limit.tokenLimitFor30day",
+      "name": "token.limit.uuid",
       "type": "java.lang.String",
-      "description": "Description for spring.limit.tokenLimitFor30day."
+      "description": "Description for token.limit.uuid."
     },
     {
-      "name": "spring.limit.duration",
+      "name": "token.limit.tokens",
       "type": "java.lang.String",
-      "description": "Description for spring.limit.duration."
+      "description": "Description for token.limit.tokens."
     },
     {
-      "name": "spring.limit.For24Hr",
+      "name": "dynamo.details.tableName",
       "type": "java.lang.String",
-      "description": "Description for spring.limit.For24Hr."
+      "description": "Description for dynamo.details.tableName."
     },
     {
-      "name": "spring.limit.For30Day",
+      "name": "dynamo.details.region",
       "type": "java.lang.String",
-      "description": "Description for spring.limit.For30Day."
+      "description": "Description for dynamo.details.region."
     },
     {
-      "name": "spring.limit.count",
+      "name": "dynamo.details.endPoint",
       "type": "java.lang.String",
-      "description": "Description for spring.limit.count."
+      "description": "Description for dynamo.details.endPoint."
     },
     {
-      "name": "spring.limit.actorId",
+      "name": "dynamo.details.maxRetry",
       "type": "java.lang.String",
-      "description": "Description for spring.limit.actorId."
-    },
-    {
-      "name": "spring.limit.ttlFor24Hr",
-      "type": "java.lang.String",
-      "description": "Description for spring.limit.ttlFor24Hr."
-    },
-    {
-      "name": "spring.limit.ttlFor30days",
-      "type": "java.lang.String",
-      "description": "Description for spring.limit.ttlFor30days."
-    },
-    {
-      "name": "spring.limit.ttl",
-      "type": "java.lang.String",
-      "description": "Description for spring.limit.ttl."
-    },
-    {
-      "name": "spring.dynamo.maxRetry",
-      "type": "java.lang.String",
-      "description": "Description for spring.dynamo.maxRetry."
+      "description": "Description for dynamo.details.maxRetry."
     }
   ]
 }

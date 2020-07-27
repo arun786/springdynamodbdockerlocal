@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @EnableConfigurationProperties
-@ConfigurationProperties(prefix = "spring.token")
+@ConfigurationProperties(prefix = "token.limit")
 @Getter
 @Setter
 public class TokenConfig {
