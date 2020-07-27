@@ -18,11 +18,11 @@ management:
 spring:
   profiles: local
 
-#  security:
-#    user:
-#      name: user
-#      password: password
-#      roles: USER,ADMIN
+  security:
+    user:
+      name: user
+      password: password
+      roles: USER,ADMIN
 
   h2:
     console:
