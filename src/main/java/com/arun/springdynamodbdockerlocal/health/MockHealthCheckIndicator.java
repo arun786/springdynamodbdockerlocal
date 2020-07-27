@@ -47,10 +47,14 @@ public class MockHealthCheckIndicator implements HealthIndicator {
             Map<String, String> valueStatus = objectMapper.readValue(String.valueOf(jsonNode), new TypeReference<>() {
             });
 
-            return valueStatus.get("status").equals("UP") ? Health.up().build() : mockHealth;
+            if (valueStatus.get("status").equals("UP")) {
+                mockHealth = Health.up().build();
+                log.info("Mock service is {}", mockHealth);
+            }
         } catch (Exception e) {
             log.error("Mock service is {}", mockHealth);
-            return mockHealth;
         }
+
+        return mockHealth;
     }
 }
