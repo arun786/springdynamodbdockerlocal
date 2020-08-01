@@ -1,18 +1,10 @@
 spring:
   profiles:
     active: local
-
 management:
   endpoint:
-    metrics:
-      enabled: true
-    loggers:
-      enabled: false
-
-  endpoints:
-    web:
-      exposure:
-        include: beans,metrics,info,health,loggers
+    health:
+      show-details: when_authorized
 
 ---
 spring:

@@ -1,4 +1,4 @@
-package com.arun.springdynamodbdockerlocal.health;
+package com.arun.springdynamodbdockerlocal.actuator;
 
 import com.arun.springdynamodbdockerlocal.config.UrlConfig;
 import com.fasterxml.jackson.core.type.TypeReference;
